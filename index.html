@@ -310,8 +310,8 @@
   /* ===== Sidebar ===== */
   .sidebar {
     position: sticky;
-    top: calc(var(--header-height) + 60px);
-    max-height: calc(100vh - var(--header-height) - 80px);
+    top: 140px;
+    max-height: calc(100vh - 160px);
     overflow-y: auto;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -4256,13 +4256,20 @@ function bindToolbar() {
 function updateScrollMargins() {
   const header = document.querySelector('.site-header');
   const toolbar = document.querySelector('.toolbar');
+  const sidebar = document.querySelector('.sidebar');
   if (!header || !toolbar) return;
   const headerH = header.offsetHeight;
   toolbar.style.top = headerH + 'px';
-  const offset = headerH + toolbar.offsetHeight + 12;
+  const stickyH = headerH + toolbar.offsetHeight;
+  const offset = stickyH + 12;
   document.querySelectorAll('.category, .level-section, .sidebar').forEach(el => {
     el.style.scrollMarginTop = offset + 'px';
   });
+  // Keep sidebar pinned just below toolbar on desktop
+  if (sidebar && window.innerWidth > 900) {
+    sidebar.style.top = (stickyH + 12) + 'px';
+    sidebar.style.maxHeight = (window.innerHeight - stickyH - 24) + 'px';
+  }
 }
 
 function showInitError(stage, err) {
