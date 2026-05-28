@@ -50,7 +50,7 @@
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     --sidebar-width: 280px;
-    --header-height: 72px;
+    --header-height: 60px;
   }
 
   @media (max-width: 900px) {
@@ -133,6 +133,18 @@
     background: #fdf4e3;
     color: var(--color-count-6);
   }
+  .counter.counter--lvl-btn {
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s, box-shadow 0.15s;
+  }
+  .counter.counter--lvl-btn:hover {
+    opacity: 0.8;
+  }
+  .counter.counter--lvl-btn.is-active {
+    box-shadow: 0 0 0 2px currentColor inset;
+  }
 
   /* ===== Toolbar ===== */
   .toolbar {
@@ -147,13 +159,13 @@
     max-width: 1400px;
     margin: 0 auto;
     display: flex;
-    gap: 14px;
+    gap: 10px 14px;
     align-items: center;
     flex-wrap: wrap;
   }
   .toolbar input[type="search"],
   .toolbar input[type="text"] {
-    flex: 1;
+    flex: 1 1 100%;
     min-width: min(220px, 100%);
     padding: 8px 12px;
     border: 1px solid var(--color-border-strong);
@@ -201,7 +213,63 @@
     height: 15px;
     cursor: pointer;
   }
+  .btn-totop {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-totop:hover {
+    background: var(--color-primary);
+    color: white;
+  }
+  .btn-totop svg { flex-shrink: 0; }
+
+  .fab-totop {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 16px;
+    z-index: 100;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s, transform 0.2s;
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+  }
+  .fab-totop.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  @media (max-width: 480px) {
+    .fab-totop { display: flex; }
+    .btn-totop { display: none; }
+  }
+
   .btn-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     background: transparent;
     color: var(--color-primary);
     border: 1px solid var(--color-primary);
@@ -949,6 +1017,7 @@
       width: 100%;
       padding: 9px 14px;
       font-size: 14px;
+      justify-content: center;
     }
     .toolbar__found {
       text-align: center;
@@ -1046,9 +1115,9 @@
     <div class="counters" id="counters">
       <span class="counter"><strong id="cnt-cats">14</strong> категорий</span>
       <span class="counter counter--accent"><strong id="cnt-skills">132</strong> навыков</span>
-      <span class="counter" style="background:var(--color-l1-bg); color:var(--color-l1);" title="Навыков релевантных на уровне L1 (тимлид, руководитель небольшой команды)">L1: <strong id="cnt-l1">94</strong></span>
-      <span class="counter" style="background:var(--color-l2-bg); color:var(--color-l2);" title="Навыков релевантных на уровне L2 (руководитель команды менеджеров)">L2: <strong id="cnt-l2">126</strong></span>
-      <span class="counter" style="background:var(--color-l3-bg); color:var(--color-l3);" title="Навыков релевантных на уровне L3 (топ-менеджмент)">L3: <strong id="cnt-l3">98</strong></span>
+      <button class="counter counter--lvl-btn" data-lvl="L1" style="background:var(--color-l1-bg); color:var(--color-l1);" title="Фильтровать по L1 — нажми чтобы показать только эти навыки">L1: <strong id="cnt-l1">94</strong></button>
+      <button class="counter counter--lvl-btn" data-lvl="L2" style="background:var(--color-l2-bg); color:var(--color-l2);" title="Фильтровать по L2 — нажми чтобы показать только эти навыки">L2: <strong id="cnt-l2">126</strong></button>
+      <button class="counter counter--lvl-btn" data-lvl="L3" style="background:var(--color-l3-bg); color:var(--color-l3);" title="Фильтровать по L3 — нажми чтобы показать только эти навыки">L3: <strong id="cnt-l3">98</strong></button>
     </div>
   </div>
 </header>
@@ -1091,7 +1160,10 @@
       <label><input type="radio" name="primary" value="L2"> Primary L2</label>
       <label><input type="radio" name="primary" value="L3"> Primary L3</label>
     </div>
-    <button class="btn-reset" id="reset">Сбросить</button>
+    <button class="btn-reset" id="reset">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0"><path d="M7 11V3M7 3L3 7M7 3L11 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Сбросить
+    </button>
     <span class="toolbar__found" id="found-count" title="Сколько навыков соответствует текущим фильтрам">Найдено: <strong>132</strong></span>
   </div>
 </div>
@@ -1112,6 +1184,10 @@
 <footer class="site-footer">
   PeopleSense 2026
 </footer>
+
+<button class="fab-totop" id="fab-totop" aria-label="Прокрутить наверх">
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 15V5M10 5L5 10M10 5L15 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
 
 <script>
 /* ===== Embedded data (skeleton_v2_graded.json) ===== */
@@ -4033,6 +4109,7 @@ function setMode(mode) {
   // duplicate listeners, causing each click on .card__expand-toggle to fire twice
   // (open then immediately close), so cards never visually expand after a mode switch.
   applyFilters();
+  updateScrollMargins();
 }
 
 /* ===== Card interactions ===== */
@@ -4144,11 +4221,50 @@ function bindToolbar() {
     $$('.lvl-filter').forEach(cb => { cb.checked = true; });
     const r = document.querySelector('input[name="primary"][value=""]');
     if (r) r.checked = true;
+    $$('.counter--lvl-btn').forEach(b => b.classList.remove('is-active'));
     applyFilters();
+    const isMobile = window.innerWidth <= 480;
+    const target = isMobile
+      ? document.querySelector('.sidebar')
+      : document.querySelector('#main .category, #main .level-section');
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // Header L1/L2/L3 buttons — solo-toggle: click once = only this level, click again = all levels
+  $$('.counter--lvl-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lvl = btn.dataset.lvl;
+      const isAlreadySolo = btn.classList.contains('is-active');
+      if (isAlreadySolo) {
+        // turn off solo — show all levels
+        state.levels = { L1: true, L2: true, L3: true };
+        $$('.lvl-filter').forEach(cb => { cb.checked = true; });
+        $$('.counter--lvl-btn').forEach(b => b.classList.remove('is-active'));
+      } else {
+        // solo this level only
+        state.levels = { L1: false, L2: false, L3: false };
+        state.levels[lvl] = true;
+        $$('.lvl-filter').forEach(cb => { cb.checked = cb.dataset.lvl === lvl; });
+        $$('.counter--lvl-btn').forEach(b => b.classList.toggle('is-active', b.dataset.lvl === lvl));
+      }
+      applyFilters();
+    });
   });
 }
 
 /* ===== Init ===== */
+function updateScrollMargins() {
+  const header = document.querySelector('.site-header');
+  const toolbar = document.querySelector('.toolbar');
+  if (!header || !toolbar) return;
+  const headerH = header.offsetHeight;
+  toolbar.style.top = headerH + 'px';
+  const offset = headerH + toolbar.offsetHeight + 12;
+  document.querySelectorAll('.category, .level-section, .sidebar').forEach(el => {
+    el.style.scrollMarginTop = offset + 'px';
+  });
+}
+
 function showInitError(stage, err) {
   var div = document.createElement('div');
   div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#C42020;color:#fff;padding:14px 18px;z-index:99999;font-family:-apple-system,system-ui,sans-serif;font-size:13px;line-height:1.4;max-height:50vh;overflow:auto;white-space:pre-wrap;';
@@ -4167,6 +4283,18 @@ document.addEventListener('DOMContentLoaded', function () {
     stage = 'bindModeToggle';       bindModeToggle();
     stage = 'bindCardInteractions'; bindCardInteractions();
     stage = 'applyFilters';         applyFilters();
+    stage = 'updateScrollMargins';  updateScrollMargins();
+    window.addEventListener('resize', updateScrollMargins);
+
+    // Scroll-to-top FAB (mobile)
+    const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    const fabTotop = $('#fab-totop');
+    if (fabTotop) {
+      fabTotop.addEventListener('click', scrollToTop);
+      window.addEventListener('scroll', () => {
+        fabTotop.classList.toggle('is-visible', window.scrollY > 300);
+      }, { passive: true });
+    }
   } catch (e) {
     showInitError(stage, e);
   }
