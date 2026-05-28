@@ -4280,6 +4280,29 @@ function showInitError(stage, err) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Notify parent (Tilda) of actual page height so iframe resizes correctly
+  function reportHeight() {
+    const h = document.documentElement.scrollHeight;
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ iframeHeight: h }, '*');
+    }
+  }
+  reportHeight();
+  new ResizeObserver(reportHeight).observe(document.body);
+
+  // When inside iframe, sticky elements don't work — disable them
+  // and let the parent page handle scrolling
+  if (window.parent && window.parent !== window) {
+    const style = document.createElement('style');
+    style.textContent = `
+      .site-header { position: relative !important; top: auto !important; }
+      .toolbar { position: relative !important; top: auto !important; }
+      .sidebar { position: relative !important; top: auto !important; max-height: none !important; }
+      .fab-totop { display: none !important; }
+    `;
+    document.head.appendChild(style);
+  }
+
   var stage = 'start';
   try {
     stage = 'renderLevelLegend';   renderLevelLegend();
